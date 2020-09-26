@@ -1,0 +1,30 @@
+The plan is
+
+                                                -----------------------------------------------------------------
+                                               |     GCP
+       Github new branch                       |
+                                               |  Existing project
+          |                                    |
+          |                                    |
+          |                                  | ----------------------------------------------------------------
+          V        run build                 |  Create LB
+       TravisCI ------------------------->   |  Deploy
+                                             |     - Create instances or App engine(not sure right now)
+                                             |
+                                              ----------------------------------------------------------------
+                                             |
+                                             | do this for each branch
+                                             |
+                                             |
+
+      (no idea how to cleanup on branch delete, maybe I'll figure it out)
+
+
+
+- First setup a environment where I can test gcloud commands and encrypt files for travis
+     - install glcoud
+     - install travis
+
+   # I'll use some stuff from my personal dev env
+
+

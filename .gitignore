@@ -1,0 +1,4 @@
+.vagrant/
+*.iml
+*.log
+*.temp

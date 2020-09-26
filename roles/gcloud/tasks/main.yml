@@ -1,0 +1,84 @@
+- name: Download the SDK package with checksum (sha256)
+  get_url:
+    url: https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-260.0.0-linux-x86_64.tar.gz
+    dest: /tmp/google-cloud-sdk-260.0.0-linux-x86_64.tar.gz
+    checksum: sha256:4a52db98684fcf013458d9a1c16652cfe7d955d1038bb9f0c89928e345f7a61b
+
+- name: Untar the SDK package
+  unarchive:
+    src: /tmp/google-cloud-sdk-260.0.0-linux-x86_64.tar.gz
+    dest: /usr/local/lib
+    owner: "{{the_user}}"
+    group: "{{the_user}}"
+
+- name: Run the installer
+  become: false
+  shell: |
+    /usr/local/lib/google-cloud-sdk/install.sh --quiet
+
+- name: Source executables in '/home/{{the_user}}/.bash_profile'
+  become: false
+  lineinfile:
+    dest: "/home/{{the_user}}/.bash_profile"
+    line: "{{item}}"
+    create: yes
+  with_items:
+    - source /usr/local/lib/google-cloud-sdk/completion.bash.inc
+    - source /usr/local/lib/google-cloud-sdk/path.bash.inc
+
+#- name: Copy gcp project service account key files
+#  copy:
+#    src: "{{ gcp_project_key_file_path }}"
+#    dest: "/tmp"
+
+#- name: Configure project
+#  raw: |
+#    gcloud auth activate-service-account --key-file /tmp/gcloud/{{ gcp_project_key_file }}
+
+#   curl -OL https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-260.0.0-linux-x86_64.tar.gz &&
+#   tar -zxf google-cloud-sdk-260.0.0-linux-x86_64.tar.gz &&
+#   google-cloud-sdk/install.sh --quiet &&
+#   echo "source /home/vagrant/google-cloud-sdk/completion.bash.inc" >> /home/vagrant/.bash_profile &&
+#   echo "source /home/vagrant/google-cloud-sdk/path.bash.inc" >> /home/vagrant/.bash_profile
+
+#- name: Make gcloud available when running with sudo
+#  become: true
+#  command: ln -s /usr/local/lib/google-cloud-sdk/bin/gcloud /usr/local/bin
+
+
+- name: Make gcloud available when running with sudo
+  become: true
+  file:
+    src: "/usr/local/lib/google-cloud-sdk/bin/{{ item }}"
+    dest: "/usr/local/bin/{{ item }}"
+    owner: root
+    group: root
+    state: link
+  with_items:
+    - gcloud
+    - bq
+    - gsutil
+
+- name: Install the beta component
+  become: true
+  shell:  gcloud -q components install beta
+
+- name: Update components
+  become: true
+  shell: gcloud components update -q
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

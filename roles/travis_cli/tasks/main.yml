@@ -1,0 +1,17 @@
+- name: Add Ruby repo
+  apt_repository:
+    repo: 'ppa:brightbox/ruby-ng'
+
+- name: Update apt
+  apt:
+    update_cache: yes
+
+- name: Install Ruby 2.6
+  apt:
+    name: ['ruby2.6', 'ruby2.6-dev']
+    state: latest
+
+- name: Install travis cli
+  command: gem install travis --no-document
+
+# will require shell completion -> run `travis -version` and enter y (`echo y | travis -version` did not work)

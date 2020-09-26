@@ -1,0 +1,26 @@
+- name: Add aliases
+  become: false
+  lineinfile:
+    dest: "/home/{{the_user}}/.bash_profile"
+    line: "{{item}}"
+    create: yes
+  with_items:
+    - "alias eb='vim ~/.bash_profile'"
+    - "alias reb='source ~/.bash_profile'"
+    - "alias g='git'"
+    - "alias gc='git clone'"
+    - "alias newb='git checkout -b'"
+    - "alias 2master='git checkout master'"
+    - "alias ll='ls -aslh'"
+    - "alias lll='ls -aslH'"
+    - "alias ls='ls -F --color=auto --show-control-chars'"
+    - "export PROMPT_COMMAND='history -a'"
+
+- name: Make command history append in between sessions
+  become: false
+  lineinfile:
+    dest: "/home/{{the_user}}/.bash_profile"
+    line: "{{item}}"
+    create: yes
+  with_items:
+    - "export PROMPT_COMMAND='history -a'"

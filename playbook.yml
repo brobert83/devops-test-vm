@@ -1,0 +1,54 @@
+---
+- hosts: all
+  become: true
+
+  vars:
+    the_user: vagrant
+    gcp_project_key_file_path: "secrets/{{ gcp_key }}"
+
+  pre_tasks:
+
+    - name: Upgrade system packages
+      become: true
+      apt:
+        upgrade: yes
+        update_cache: yes
+
+    - name: Install base system packages
+      apt:
+        name: [
+        'aptitude',
+          'htop',
+          'tree',
+          'python-pip',
+          'golang-go',
+          'ruby',
+          'build-essential',
+          'curl',
+          'file',
+          'git',
+          'python-setuptools',
+          'apt-transport-https',
+          'ca-certificates',
+          'software-properties-common',
+          'expect',
+          'ubuntu-fan',
+          'jq',
+          'uuid-runtime',
+          'maven'
+         ]
+        state: latest
+
+    - name: Start the ssh agent
+      lineinfile:
+        path: "/home/{{ the_user }}/.bashrc"
+        line: "eval `ssh-agent -s`"
+
+  roles:
+    - bash_profile
+
+    - name: gcloud
+      gcp_project_key_file: "{{ gcp_project_key_file_path }}"
+
+    - travis_cli
+
