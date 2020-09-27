@@ -1,11 +1,10 @@
 #!/bin/bash
 
-set -x
-
 name=$1
 
 project=workshop-devops-test
 service_account_name=ci
+region=us-central1
 zone=us-central1-a
 
 backend_port=3000
@@ -21,16 +20,34 @@ address_name=${name}-address
 http_proxy_name=${name}-http-proxy
 health_check_name=${name}-health-check
 frontend_forwarding_rule=${name}-frontend-forwarding-rule
+firewall_lb_allow_name=${name}-fw-allow-health-check-and-proxy
+firewall_lb_allow_tag=${name}-allow-hc-and-proxy
+
+set -x
+echo -e "\nCreating environment: ${name}\n"
+
+gcloud compute firewall-rules create ${firewall_lb_allow_name} \
+    --network=default \
+    --action=allow \
+    --direction=ingress \
+    --target-tags=${firewall_lb_allow_tag} \
+    --source-ranges=130.211.0.0/22,35.191.0.0/16 \
+    --rules=tcp:80,tcp:443,tcp:3000
+
+gcloud compute addresses create ${address_name} \
+    --ip-version=IPV4 \
+    --global
 
 gcloud beta compute \
    --project=${project} instance-templates create ${instance_template} \
+   --region=${region} \
    --machine-type=e2-micro \
    --network=projects/${project}/global/networks/default \
    --network-tier=PREMIUM \
    --maintenance-policy=MIGRATE \
    --service-account=${service_account_email} \
    --scopes=https://www.googleapis.com/auth/devstorage.read_only,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/monitoring.write,https://www.googleapis.com/auth/servicecontrol,https://www.googleapis.com/auth/service.management.readonly,https://www.googleapis.com/auth/trace.append \
-   --tags=http-server \
+   --tags=http-server,${firewall_lb_allow_tag} \
    --image=ubuntu-1604-xenial-v20200923 \
    --image-project=ubuntu-os-cloud \
    --boot-disk-size=10GB \
@@ -39,7 +56,16 @@ gcloud beta compute \
    --no-shielded-secure-boot \
    --shielded-vtpm \
    --shielded-integrity-monitoring \
-   --reservation-affinity=any
+   --reservation-affinity=any \
+    --metadata=startup-script='#! /bin/bash
+     apt-get update
+     apt-get install apache2 -y
+     a2ensite default-ssl
+     a2enmod ssl
+     vm_hostname="$(curl -H "Metadata-Flavor:Google" http://169.254.169.254/computeMetadata/v1/instance/name)"
+     echo "Page served from: $vm_hostname" | tee /var/www/html/index.html
+     sed -i "s/Listen 80/Listen 3000/g" /etc/apache2/ports.conf
+     systemctl restart apache2'
 
 gcloud compute \
    --project=${project} instance-groups managed create ${instance_group_name} \
@@ -76,8 +102,22 @@ gcloud compute target-http-proxies create ${http_proxy_name} \
     --url-map ${url_map_name}
 
 gcloud compute forwarding-rules create ${frontend_forwarding_rule} \
+    --address=${address_name} \
     --global \
     --target-http-proxy=${http_proxy_name} \
     --ports=${frontend_port}
 
-echo "Frontend IP: $(gcloud compute forwarding-rules describe ${frontend_forwarding_rule} --format=json --global | jq --raw-output '.IPAddress')"
+frontend_ip=$(gcloud compute forwarding-rules describe ${frontend_forwarding_rule} --format=json --global | jq --raw-output '.IPAddress')
+
+set +x
+
+echo -e "Frontend IP: ${frontend_ip}\n"
+
+echo "Waiting to become available "
+
+until $(curl --output /dev/null --silent --head --fail http://${frontend_ip}); do
+    echo -n '.'
+    sleep 5
+done
+
+echo "Deployment done"
