@@ -26,26 +26,6 @@
     - source /usr/local/lib/google-cloud-sdk/completion.bash.inc
     - source /usr/local/lib/google-cloud-sdk/path.bash.inc
 
-#- name: Copy gcp project service account key files
-#  copy:
-#    src: "{{ gcp_project_key_file_path }}"
-#    dest: "/tmp"
-
-#- name: Configure project
-#  raw: |
-#    gcloud auth activate-service-account --key-file /tmp/gcloud/{{ gcp_project_key_file }}
-
-#   curl -OL https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-260.0.0-linux-x86_64.tar.gz &&
-#   tar -zxf google-cloud-sdk-260.0.0-linux-x86_64.tar.gz &&
-#   google-cloud-sdk/install.sh --quiet &&
-#   echo "source /home/vagrant/google-cloud-sdk/completion.bash.inc" >> /home/vagrant/.bash_profile &&
-#   echo "source /home/vagrant/google-cloud-sdk/path.bash.inc" >> /home/vagrant/.bash_profile
-
-#- name: Make gcloud available when running with sudo
-#  become: true
-#  command: ln -s /usr/local/lib/google-cloud-sdk/bin/gcloud /usr/local/bin
-
-
 - name: Make gcloud available when running with sudo
   become: true
   file:
@@ -66,19 +46,3 @@
 - name: Update components
   become: true
   shell: gcloud components update -q
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

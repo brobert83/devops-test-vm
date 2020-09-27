@@ -28,3 +28,31 @@ The plan is
    # I'll use some stuff from my personal dev env
 
 
+================ Manual things ====================
+
+ Must enable via UI
+
+     Cloud Resource Manager API
+        - https://console.developers.google.com/apis/library/cloudresourcemanager.googleapis.com?project=workshop-devops-test
+
+-----------------
+Travis
+
+   login --> echo y | travis login --github-token=$(cat /vagrant/secrets/github_token)
+
+-----------------
+Gcloud
+
+  gcloud auth activate-service-account --key-file /vagrant/secrets/gcp_project_key.json
+  gcloud config set project workshop-devops-test
+
+to grab service account email
+
+    gcloud iam service-accounts list
+      API [iam.googleapis.com] not enabled on project [292286721672]. Would
+      you like to enable and retry (this will take a few minutes)? (y/N)?  y
+
+
+@@@@@@@@@@@@@@@
+  At this point I got some script to setup and destroy the infrastructure
+  Next, make it happen from Travis (the create at least) // will need to use a 'normalized' branch name

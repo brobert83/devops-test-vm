@@ -4,7 +4,6 @@
 
   vars:
     the_user: vagrant
-    gcp_project_key_file_path: "secrets/{{ gcp_key }}"
 
   pre_tasks:
 
@@ -44,11 +43,19 @@
         path: "/home/{{ the_user }}/.bashrc"
         line: "eval `ssh-agent -s`"
 
+    - name: Check if gcloud is installed
+      command: gcloud -v
+      register: gcloud_version_cmd
+      ignore_errors: yes
+    - set_fact:
+        gcloud_installed: "{{ gcloud_version_cmd.rc == 0 }}"
+
   roles:
+
     - bash_profile
 
     - name: gcloud
-      gcp_project_key_file: "{{ gcp_project_key_file_path }}"
+      when: not gcloud_installed
 
     - travis_cli
 
