@@ -17,6 +17,7 @@
   - this [guide](https://docs.bmc.com/docs/PATROL4GoogleCloudPlatform/10/creating-a-service-account-key-in-the-google-cloud-platform-project-799095477.html) shows how to create a key
 - Change or remove the synced folder    
 - Then `vagrant up`
+- For GKE, run `gcloud container clusters get-credentials ${cluster_name} --zone=${zone}` to tell kubectl against which cluster to run against
 
 ### Other notes
 - I used this machine to create the GCP environment setup scripts (under the `travis/` directory)

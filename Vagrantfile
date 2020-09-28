@@ -10,7 +10,8 @@ Vagrant.configure("2") do |config|
     ansible.playbook = "playbook.yml"
     ansible.verbose = "vvv"
     ansible.extra_vars = {
-        GCP_PROJECT_NAME: "buildit-devops-test"
+        GCP_PROJECT_NAME: "buildit-devops-test",
+        GCP_ZONE: "us-central1-a"
     }
   end
 

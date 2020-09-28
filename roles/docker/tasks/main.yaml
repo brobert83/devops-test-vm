@@ -1,0 +1,20 @@
+- name: Copy docker packages to target
+  copy:
+    src: "persistence/docker_packages"
+    dest: "/tmp"
+
+- name: Install docker packages
+  include: common/dpkg_install.yml dkpg_package_path=/tmp/docker_packages/{{ item }}
+  with_items:
+    - containerd.io_*
+    - docker-ce-cli_*
+    - docker-ce_*
+
+- name: Make docker usable by the {{ the_user }} user
+  become: true
+  command: |
+    usermod -aG docker {{ the_user }}
+
+- name: Enable on boot
+  command: |
+    systemctl enable docker
