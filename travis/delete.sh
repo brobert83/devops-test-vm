@@ -3,7 +3,7 @@
 name=$1
 
 zone=us-central1-a
-project=workshop-devops-test
+project=buildit-devops-test
 
 instance_template=${name}-instance-template
 instance_group_name=${name}-mig

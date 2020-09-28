@@ -33,18 +33,22 @@ The plan is
  Must enable via UI
 
      Cloud Resource Manager API
-        - https://console.developers.google.com/apis/library/cloudresourcemanager.googleapis.com?project=workshop-devops-test
+        - https://console.developers.google.com/apis/library/cloudresourcemanager.googleapis.com?project=buildit-devops-test
 
 -----------------
 Travis
 
-   login --> echo y | travis login --github-token=$(cat /vagrant/secrets/github_token)
+   login --> travis login --github-token=$(cat /vagrant/secrets/github_token)
 
 -----------------
 Gcloud
 
   gcloud auth activate-service-account --key-file /vagrant/secrets/gcp_project_key.json
-  gcloud config set project workshop-devops-test
+  gcloud config set project buildit-devops-test
+  gcloud services enable cloudapis.googleapis.com
+  gcloud services enable cloudresourcemanager.googleapis.com
+  gcloud services enable compute.googleapis.com
+  gcloud services enable iam.googleapis.com
 
 to grab service account email
 
@@ -56,3 +60,6 @@ to grab service account email
 @@@@@@@@@@@@@@@
   At this point I got some script to setup and destroy the infrastructure
   Next, make it happen from Travis (the create at least) // will need to use a 'normalized' branch name
+
+
+

@@ -1,14 +1,15 @@
 #!/bin/bash
 
-name=$1
+set -x
 
-project=workshop-devops-test
-service_account_name=ci
-region=us-central1
-zone=us-central1-a
+name=$(echo $1 | tr -cd "'[:alnum:]")
 
-backend_port=3000
-frontend_port=80
+project=$2
+service_account_name=$3
+region=$4
+zone=$5
+frontend_port=$6
+backend_port=$7
 
 service_account_email=$(gcloud iam service-accounts list --filter="name:${service_account_name}" --format json | jq --raw-output '.[]| .email')
 
@@ -23,7 +24,6 @@ frontend_forwarding_rule=${name}-frontend-forwarding-rule
 firewall_lb_allow_name=${name}-fw-allow-health-check-and-proxy
 firewall_lb_allow_tag=${name}-allow-hc-and-proxy
 
-set -x
 echo -e "\nCreating environment: ${name}\n"
 
 gcloud compute firewall-rules create ${firewall_lb_allow_name} \
@@ -32,7 +32,7 @@ gcloud compute firewall-rules create ${firewall_lb_allow_name} \
     --direction=ingress \
     --target-tags=${firewall_lb_allow_tag} \
     --source-ranges=130.211.0.0/22,35.191.0.0/16 \
-    --rules=tcp:80,tcp:443,tcp:3000
+    --rules=tcp:3000
 
 gcloud compute addresses create ${address_name} \
     --ip-version=IPV4 \

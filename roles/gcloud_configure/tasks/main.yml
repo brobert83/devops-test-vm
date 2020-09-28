@@ -1,0 +1,13 @@
+- name: Setup project and account
+  become: false
+  shell: |
+   gcloud auth activate-service-account --key-file {{ gcp_key_file }}
+   gcloud config set project {{ gcp_project_name }}
+
+- name: Activate apis
+  become: false
+  shell: |
+    gcloud services enable cloudapis.googleapis.com
+    gcloud services enable cloudresourcemanager.googleapis.com
+    gcloud services enable compute.googleapis.com
+    gcloud services enable iam.googleapis.com

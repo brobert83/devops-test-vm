@@ -1,19 +1,12 @@
 to create the key file
   https://docs.bmc.com/docs/PATROL4GoogleCloudPlatform/10/creating-a-service-account-key-in-the-google-cloud-platform-project-799095477.html
 
-
-
-
-
 #  gcloud auth login [ACCOUNT] [--no-activate] [--brief] [--enable-gdrive-access] [--force] [--no-launch-browser] [--update-adc] [GCLOUD_WIDE_FLAG …]
-
-
 
  == TO CONFIGURE GCLOUD TO USE THE ACCOUNT ==
 
- gcloud auth login robert.baboi@gmail.com --no-activate --no-launch-browser
+ gcloud auth login {{ the email of the main gcp account }} --no-activate --no-launch-browser
 
  follow the link
    then -> take the code and enter it
-       then ->  gcloud config set account robert.baboi@gmail.com
-
+       then ->  gcloud config set account {{ the email of the main gcp account }}

@@ -9,6 +9,9 @@ Vagrant.configure("2") do |config|
   config.vm.provision "ansible_local" do |ansible|
     ansible.playbook = "playbook.yml"
     ansible.verbose = "vvv"
+    ansible.extra_vars = {
+        GCP_PROJECT_NAME: "buildit-devops-test"
+    }
   end
 
   config.vm.provider "virtualbox" do |vb|
@@ -19,4 +22,5 @@ Vagrant.configure("2") do |config|
 
   config.vm.network "public_network", ip: "192.168.0.10"
 
+  config.vm.synced_folder "e:/source/devops-test", "/home/vagrant/devops-test", create: true
 end
