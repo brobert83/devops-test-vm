@@ -1,0 +1,17 @@
+- name: Add the kubectl apt-key
+  shell: |
+    curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+
+- name: Add the kubectl package location
+  shell: |
+    echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list
+
+- name: Upgrade system packages
+  apt:
+    upgrade: yes
+    update_cache: yes
+
+- name: Install the kubectl package
+  apt:
+    name: kubectl
+    state: latest
